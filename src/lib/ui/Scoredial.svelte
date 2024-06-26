@@ -96,10 +96,8 @@
         const mouseUpHandler = () => {
             active = false;
             currentAngle = 0;
-            window.removeEventListener('mousemove', mouseMoveHandler);
-            window.removeEventListener('mouseup', mouseUpHandler);
-            window.removeEventListener('touchmove', mouseMoveHandler);
-            window.removeEventListener('touchend', mouseUpHandler);
+            window.removeEventListener('pointermove', mouseMoveHandler);
+            window.removeEventListener('pointerup', mouseUpHandler);
         };
 
         const mouseDownHandler = (ev: MouseEvent | TouchEvent) => {
@@ -123,18 +121,14 @@
             currentAngle = initialAngle;
             prevAngle = initialAngle;
             active = true;
-            window.addEventListener('mousemove', mouseMoveHandler);
-            window.addEventListener('mouseup', mouseUpHandler);
-            window.addEventListener('touchmove', mouseMoveHandler);
-            window.addEventListener('touchend', mouseUpHandler);
+            window.addEventListener('pointermove', mouseMoveHandler);
+            window.addEventListener('pointerup', mouseUpHandler);
         };
-        svg.addEventListener('mousedown', mouseDownHandler);
-        svg.addEventListener('touchstart', mouseDownHandler);
+        svg.addEventListener('pointerdown', mouseDownHandler);
         return {
             destroy() {
                 mouseUpHandler();
-                svg.removeEventListener('mousedown', mouseDownHandler);
-                svg.removeEventListener('touchstart', mouseDownHandler);
+                svg.removeEventListener('pointerdown', mouseDownHandler);
             },
         };
     }
