@@ -1,15 +1,15 @@
 /**
  * Parse player names and colors from the query string.
  * @example
- *     parsePlayerPool('?p=Player1,ff0000;Player2,00ff00;Player3,0000ff');
+ *     parsePlayerPool('#Player1,ff0000;Player2,00ff00;Player3,0000ff');
  *     parsePlayerPool(window.location.search);
  * @param queryString - The query string to parse.
  * @returns An array of player objects with id, name, and color.
  */
 export function parsePlayerPool(
-    queryString: string,
+    hashString: string,
 ): Array<{ id: number; name: string; color: string }> {
-    const str = new URLSearchParams(queryString).get('p') ?? '';
+    const str = hashString.replace(/^#/, '');
     return str
         .split(';')
         .map((str, i) => {

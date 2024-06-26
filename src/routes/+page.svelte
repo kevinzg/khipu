@@ -12,7 +12,7 @@
     let showHistory = $state(false);
 
     $effect(() => {
-        const players = parsePlayerPool(window.location.search);
+        const players = parsePlayerPool(window.location.hash);
         if (players.length > 0) {
             data.setPlayerPool(players);
         } else {
