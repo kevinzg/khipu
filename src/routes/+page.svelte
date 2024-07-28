@@ -24,6 +24,12 @@
                 { id: 5, name: 'Eve', color: '#c026d3' },
             ]);
         }
+
+        window.addEventListener("beforeunload", (ev) => {
+            if (data.actions.length > 0) {
+                ev.preventDefault();
+            }
+        });
     });
 
     setContext('data', data);
