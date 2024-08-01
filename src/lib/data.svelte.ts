@@ -66,19 +66,39 @@ export class Data {
     }
 
     get summary(): Summary {
+        // Calculate score
         const score: Record<Id, Points> = {};
         for (let i = 0; i < this.head; i++) {
             const { playerId, delta } = this.actions[i];
             score[playerId] = (score[playerId] ?? 0) + delta;
         }
-        const summary = this.players
-            .map((player) => {
-                const points = score[player.id] ?? 0;
-                return { player, score: points };
-            })
-            .sort((a, b) => {
-                return b.score - a.score;
-            });
+        // Ensure all players have a score
+        for (const player of this.players) {
+            if (!(player.id in score)) {
+                score[player.id] = 0;
+            }
+        }
+        // Compute the rank of each player
+        const ranks: Record<Id, number> = {};
+        const ranking: Array<{ id: number; points: number }> = Object.entries(score)
+            .sort((a, b) => b[1] - a[1])
+            .map(([id, points]) => ({ id: parseInt(id), points }));
+        for (let i = 0; i < ranking.length; ) {
+            const rank = i + 1;
+            const rankPoints = ranking[i].points;
+            while (i < ranking.length && ranking[i].points === rankPoints) {
+                ranks[ranking[i].id] = rank;
+                i++;
+            }
+        }
+        const summary = this.players.map((player) => {
+            const points = score[player.id];
+            return {
+                player,
+                score: points,
+                rank: ranks[player.id],
+            };
+        });
         return summary;
     }
 
@@ -133,4 +153,5 @@ export type Player = {
 type Summary = Array<{
     player: Player;
     score: Points;
+    rank: number; // 1 for first, 2 for second, etc., in case of ties both players will have the same rank
 }>;
