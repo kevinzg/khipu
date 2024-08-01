@@ -1,11 +1,38 @@
+const STORAGE_KEY = 'datav1';
+
 export class Data {
-    n: number = 0;
     actions: Action[] = $state([]);
     head: number = $state(0); // index of the last action
     players: Player[] = $state([]);
     pool: Array<Player> = $state([]);
 
-    constructor() {}
+    constructor() {
+        // Load from localStorage on startup
+        $effect.pre(() => {
+            try {
+                const data = window.localStorage.getItem(STORAGE_KEY);
+                if (data) {
+                    const { actions, head, players } = JSON.parse(data);
+                    this.actions = actions;
+                    this.head = head;
+                    this.players = players;
+                }
+            } catch (ex) {
+                console.error('Failed to load data from localStorage', ex);
+            }
+        });
+
+        // Save to localStorage after each change
+        $effect(() => {
+            // NOTE: Not serializing the pool because there's no way to remove players from it yet
+            const serialized = JSON.stringify({
+                actions: this.actions,
+                head: this.head,
+                players: this.players,
+            });
+            window.localStorage.setItem(STORAGE_KEY, serialized);
+        });
+    }
 
     setPlayerPool(pool: Array<Player>) {
         this.pool = pool;
@@ -85,7 +112,7 @@ export class Data {
      * Players that are not in the game yet
      */
     get freePlayers(): Player[] {
-        return this.pool.filter((p) => !this.players.includes(p));
+        return this.pool.filter((p) => !this.players.find((p2) => p.id === p2.id));
     }
 }
 
