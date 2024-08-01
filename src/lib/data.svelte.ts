@@ -65,6 +65,12 @@ export class Data {
         }
     }
 
+    reset() {
+        this.actions = [];
+        this.head = 0;
+        this.players = [];
+    }
+
     get summary(): Summary {
         // Calculate score
         const score: Record<Id, Points> = {};

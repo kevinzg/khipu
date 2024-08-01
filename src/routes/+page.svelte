@@ -50,6 +50,12 @@
             },
         };
     }
+
+    function reset() {
+        if (confirm('Are you sure you want to start a new game?')) {
+            data.reset();
+        }
+    }
 </script>
 
 <!-- Outer container -->
@@ -71,6 +77,7 @@
             <button onclick={() => (showHistory = !showHistory)}>
                 {showHistory ? 'Ranking' : 'History'}
             </button>
+            <button onclick={reset}> Reset </button>
         </div>
     </div>
 
