@@ -16,6 +16,8 @@
             <div class="text-2xl font-bold">
                 {#if p.rank === 1 && p.score > 0}
                     👑
+                {:else if p.showTurtle}
+                    🐢
                 {/if}
                 {p.score}
             </div>
