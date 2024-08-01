@@ -97,11 +97,11 @@ export class Data {
                 i++;
             }
         }
+        // Generate the summary
         const summary = this.players.map((player) => {
-            const points = score[player.id];
             return {
                 player,
-                score: points,
+                score: score[player.id],
                 rank: ranks[player.id],
             };
         });
