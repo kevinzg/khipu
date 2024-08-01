@@ -25,7 +25,7 @@
             ]);
         }
 
-        window.addEventListener("beforeunload", (ev) => {
+        window.addEventListener('beforeunload', (ev) => {
             if (data.actions.length > 0) {
                 ev.preventDefault();
             }
