@@ -13,7 +13,12 @@
                     <h2 class="text-xl font-semibold">{p.player.name}</h2>
                 </div>
             </div>
-            <div class="text-2xl font-bold">{p.score}</div>
+            <div class="text-2xl font-bold">
+                {#if p.rank === 1 && p.score > 0}
+                    👑
+                {/if}
+                {p.score}
+            </div>
         </div>
     {/each}
 </div>
