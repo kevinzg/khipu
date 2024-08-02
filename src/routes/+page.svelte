@@ -6,6 +6,7 @@
     import Scoreboard from '$lib/ui/Scoreboard.svelte';
     import History from '$lib/ui/History.svelte';
     import { parsePlayerPool } from '$lib/common';
+    import Lines from '$lib/ui/Lines.svelte';
 
     const data = new Data();
 
@@ -63,7 +64,7 @@
     <!-- Main content -->
     <div class="main flex-grow overflow-hidden">
         <!-- Scoreboard -->
-        <div class="bg-gray-200 overflow-scroll">
+        <div class="flex flex-col bg-gray-200 overflow-scroll">
             <!-- Toolbar -->
             <div class="flex flex-row justify-between items-center px-2 py-2 space-x-2 bg-white">
                 <div class="flex flex-row space-x-2">
@@ -178,7 +179,12 @@
             {#if showHistory}
                 <History {data} />
             {:else}
-                <Scoreboard {data} />
+                <div class="flex flex-col flex-grow space-between">
+                    <div class="flex-grow">
+                        <Scoreboard {data} />
+                    </div>
+                    <Lines {data} />
+                </div>
             {/if}
         </div>
 
