@@ -107,7 +107,7 @@ export class Data {
                 if (maxScore > 0) {
                     const p = thisScore / maxScore;
                     const pNext = nextScore / maxScore;
-                    if (p < 0.5 && pNext > 0.5 && (pNext - p) > 0.2) {
+                    if (p < 0.5 && pNext > 0.5 && pNext - p > 0.2) {
                         showTurtle = true;
                     }
                 }
