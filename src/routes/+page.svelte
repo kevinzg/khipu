@@ -69,6 +69,7 @@
                 <div class="flex flex-row space-x-2">
                     <button
                         class="button icon"
+                        title="Undo"
                         onclick={() => data.undo()}
                         disabled={!data.canUndo}
                     >
@@ -89,6 +90,7 @@
                     </button>
                     <button
                         class="button icon"
+                        title="Redo"
                         onclick={() => data.redo()}
                         disabled={!data.canRedo}
                     >
@@ -117,7 +119,11 @@
                     </select>
                 </div>
                 <div class="flex flex-row space-x-2">
-                    <button class="button icon" onclick={() => (showHistory = !showHistory)}>
+                    <button
+                        class="button icon"
+                        title={showHistory ? 'Show scoreboard' : 'Show history'}
+                        onclick={() => (showHistory = !showHistory)}
+                    >
                         {#if showHistory}
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +156,7 @@
                             </svg>
                         {/if}
                     </button>
-                    <button class="button red icon" onclick={reset}>
+                    <button title="Reset" class="button red icon" onclick={reset}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
