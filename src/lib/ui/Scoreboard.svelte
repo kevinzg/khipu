@@ -4,7 +4,7 @@
 </script>
 
 <div class="flex flex-col space-y-2 my-2 mx-2">
-    {#each data.summary as p (p.player.name)}
+    {#each data.summary as p (p.player.id)}
         <div class="flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg">
             <div class="flex items-center space-x-4">
                 <!-- Circle -->
