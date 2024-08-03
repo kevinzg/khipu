@@ -1,4 +1,4 @@
-# scorpion
+# scorpio
 
 Score tracking app for board games.
 

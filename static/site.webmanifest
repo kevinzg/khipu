@@ -1,7 +1,7 @@
 {
-    "name": "Scorpion",
-    "short_name": "Scorpion",
-    "description": "App to keep game scores",
+    "name": "Scorpio",
+    "short_name": "Scorpio",
+    "description": "Score tracking app for board games.",
     "categories": ["games"],
     "theme_color": "#000000",
     "background_color": "#fafafa",
