@@ -1,6 +1,7 @@
 <script lang="ts">
     import { setContext } from 'svelte';
 
+    import { loop } from '$lib/common';
     import { Data } from '$lib/data.svelte';
     import Scoredial from '$lib/ui/Scoredial.svelte';
     import Scoreboard from '$lib/ui/Scoreboard.svelte';
@@ -52,9 +53,43 @@
     }
 
     function reset() {
-        if (confirm('Are you sure you want to start a new game?')) {
+        if (!ongoingPick && confirm('Are you sure you want to start a new game?')) {
             data.reset();
+            firstPlayer = null;
         }
+    }
+
+    let firstPlayer: null | number = $state(null);
+    let ongoingPick = $state(false);
+
+    function pickFirstPlayer() {
+        if (ongoingPick || data.players.length < 2) return;
+        const n = data.players.length;
+        ongoingPick = true;
+        const duration = 1500 + Math.random() * 1000;
+        const easeOutCustom = (x: number) => 1 - (1 - x) * (1 - x);
+        let prev = -1;
+        const nSteps = 8 + Math.floor(Math.random() * 8);
+        loop(
+            duration,
+            (elapsedTime) => {
+                const progress = elapsedTime / duration;
+                const step = Math.floor(easeOutCustom(progress) * nSteps);
+                if (step !== prev) {
+                    if (firstPlayer == null) {
+                        firstPlayer = Math.floor(Math.random() * n);
+                    } else {
+                        // Don't pick the same player twice in a row
+                        const x = Math.floor(Math.random() * (n - 1));
+                        firstPlayer = x >= firstPlayer ? x + 1 : x;
+                    }
+                    prev = step;
+                }
+            },
+            () => {
+                ongoingPick = false;
+            },
+        );
     }
 </script>
 
@@ -120,6 +155,27 @@
                 </div>
                 <div class="flex flex-row space-x-2">
                     <button
+                        title="Pick first player"
+                        class="button icon"
+                        class:yellow={ongoingPick}
+                        onclick={pickFirstPlayer}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="size-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z"
+                            />
+                        </svg>
+                    </button>
+                    <button
                         class="button icon"
                         title={showHistory ? 'Show scoreboard' : 'Show history'}
                         onclick={() => (showHistory = !showHistory)}
@@ -180,7 +236,7 @@
             {:else}
                 <div class="flex flex-col flex-grow space-between">
                     <div class="flex-grow">
-                        <Scoreboard {data} />
+                        <Scoreboard {data} {firstPlayer} />
                     </div>
                     <Lines {data} />
                 </div>
@@ -228,6 +284,17 @@
     }
     .red:active {
         @apply text-red-800;
+    }
+
+    .yellow {
+        @apply text-yellow-500;
+        @apply bg-yellow-100 hover:bg-yellow-200 active:bg-yellow-300 disabled:bg-gray-200;
+    }
+    .yellow:hover {
+        @apply text-yellow-700;
+    }
+    .yellow:active {
+        @apply text-yellow-800;
     }
 
     .main {
