@@ -36,14 +36,13 @@
     setContext('data', data);
 
     function selection(node: HTMLSelectElement) {
-        const selectPlayer = (ev: Event) => {
-            const id = parseInt(ev.target.value);
+        const selectPlayer = () => {
+            const id = parseInt(node.value);
             if (id) {
                 data.addPlayer(id);
             }
-            ev.target.value = '';
+            node.value = '';
         };
-
         node.addEventListener('change', selectPlayer);
         return {
             destroy() {
