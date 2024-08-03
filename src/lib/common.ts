@@ -23,3 +23,12 @@ export function parsePlayerPool(
 export function formatDelta(delta: number): string {
     return delta > 0 ? `+${delta}` : `${delta}`;
 }
+
+export function assert(condition: boolean, message: string): void {
+    if (!condition) {
+        if (typeof window !== 'undefined') {
+            window.alert(`Assertion failed: ${message}`);
+        }
+        throw new Error(message);
+    }
+}
