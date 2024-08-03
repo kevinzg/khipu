@@ -32,3 +32,23 @@ export function assert(condition: boolean, message: string): void {
         throw new Error(message);
     }
 }
+
+export function loop(
+    duration: number,
+    callback: (elapsedTime: number) => void,
+    end: () => void,
+): void {
+    const startTime = performance.now();
+
+    function animate(currentTime: number) {
+        const elapsedTime = currentTime - startTime;
+        if (elapsedTime < duration) {
+            requestAnimationFrame(animate);
+        } else {
+            end();
+        }
+        callback(elapsedTime);
+    }
+
+    requestAnimationFrame(animate);
+}
