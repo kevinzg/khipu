@@ -1,11 +1,14 @@
 <script lang="ts">
     import type { Data } from '$lib/data.svelte';
-    const { data }: { data: Data } = $props();
+    const { data, firstPlayer }: { data: Data; firstPlayer: number | null } = $props();
 </script>
 
 <div class="flex flex-col space-y-2 my-2 mx-2">
-    {#each data.summary as p (p.player.id)}
-        <div class="flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg">
+    {#each data.summary as p, idx (p.player.id)}
+        <div
+            class="flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg"
+            class:highlight={idx === firstPlayer}
+        >
             <div class="flex items-center space-x-4">
                 <!-- Circle -->
                 <div class="h-6 w-6 rounded-full" style="background-color: {p.player.color}"></div>
@@ -24,3 +27,9 @@
         </div>
     {/each}
 </div>
+
+<style lang="postcss">
+    .highlight {
+        @apply bg-yellow-200;
+    }
+</style>
