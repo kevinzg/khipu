@@ -52,3 +52,31 @@ export function loop(
 
     requestAnimationFrame(animate);
 }
+
+export function longpress(node: HTMLButtonElement, threshold = 500) {
+    const handler = () => {
+        const timeout = setTimeout(() => {
+            node.dispatchEvent(new CustomEvent('longpress'));
+        }, threshold);
+
+        const cancel = (ev: PointerEvent) => {
+            clearTimeout(timeout);
+            // TODO: this doesn't prevent the click event from firing
+            ev.stopPropagation();
+            ev.preventDefault();
+            node.removeEventListener('pointermove', cancel);
+            node.removeEventListener('pointerup', cancel);
+        };
+
+        node.addEventListener('pointermove', cancel);
+        node.addEventListener('pointerup', cancel);
+    };
+
+    node.addEventListener('pointerdown', handler);
+
+    return {
+        destroy() {
+            node.removeEventListener('pointerdown', handler);
+        },
+    };
+}
