@@ -1,7 +1,7 @@
 <script lang="ts">
     import { setContext } from 'svelte';
 
-    import { loop, longpress } from '$lib/common';
+    import { loop, longpress, assert } from '$lib/common';
     import { Data } from '$lib/data.svelte';
     import Scoredial from '$lib/ui/Scoredial.svelte';
     import Scoreboard from '$lib/ui/Scoreboard.svelte';
@@ -68,18 +68,21 @@
         if (ongoingPick || data.players.length < 2) return;
         const n = data.players.length;
         ongoingPick = true;
-        const duration = 1500 + Math.random() * 1000;
+        firstPlayer = Math.floor(Math.random() * n);
+        const duration = 2000 + Math.random() * 1000;
         const easeOutCustom = (x: number) => 1 - (1 - x) * (1 - x);
         let prev = -1;
-        const nSteps = 8 + Math.floor(Math.random() * 8);
+        const nSteps = 4 * n + Math.floor(Math.random() * n);
+        let mode = Math.floor(Math.random() * 2);
         loop(
             duration,
             (elapsedTime) => {
                 const progress = elapsedTime / duration;
                 const step = Math.floor(easeOutCustom(progress) * nSteps);
                 if (step !== prev) {
-                    if (firstPlayer == null) {
-                        firstPlayer = Math.floor(Math.random() * n);
+                    assert(firstPlayer !== null, 'firstPlayer is null');
+                    if (mode === 0) {
+                        firstPlayer = (firstPlayer + 1) % n;
                     } else {
                         // Don't pick the same player twice in a row
                         const x = Math.floor(Math.random() * (n - 1));
