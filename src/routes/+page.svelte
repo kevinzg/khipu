@@ -1,7 +1,7 @@
 <script lang="ts">
     import { setContext } from 'svelte';
 
-    import { loop } from '$lib/common';
+    import { loop, longpress } from '$lib/common';
     import { Data } from '$lib/data.svelte';
     import Scoredial from '$lib/ui/Scoredial.svelte';
     import Scoreboard from '$lib/ui/Scoreboard.svelte';
@@ -14,7 +14,9 @@
     let showHistory = $state(false);
 
     $effect(() => {
-        const players = parsePlayerPool(window.location.hash);
+        const players = parsePlayerPool(
+            window.localStorage.getItem('playersv1') ?? window.location.hash,
+        );
         if (players.length > 0) {
             data.setPlayerPool(players);
         } else {
@@ -91,6 +93,11 @@
             },
         );
     }
+
+    function setPlayers() {
+        const players = prompt('Players `#P1,ff0000;P2,00ff00`');
+        if (players) window.localStorage.setItem('playersv1', players);
+    }
 </script>
 
 <!-- Outer container -->
@@ -147,7 +154,7 @@
                 </div>
                 <div>
                     <select use:selection class="text">
-                        <option value="">Add player</option>
+                        <option value="">Players</option>
                         {#each data.freePlayers as p}
                             <option value={p.id}>{p.name}</option>
                         {/each}
@@ -158,6 +165,8 @@
                         title="Pick first player"
                         class="button icon"
                         class:yellow={ongoingPick}
+                        use:longpress={1000}
+                        onlongpress={setPlayers}
                         onclick={pickFirstPlayer}
                     >
                         <svg
