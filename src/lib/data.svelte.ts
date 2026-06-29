@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'datav1';
+const STORAGE_KEY = 'khipu:datav1';
 
 export class Data {
     actions: Action[] = $state([]);

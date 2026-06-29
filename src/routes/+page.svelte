@@ -15,7 +15,7 @@
 
     $effect(() => {
         const players = parsePlayerPool(
-            window.localStorage.getItem('playersv1') ?? window.location.hash,
+            window.localStorage.getItem('khipu:playersv1') ?? window.location.hash,
         );
         if (players.length > 0) {
             data.setPlayerPool(players);
@@ -99,7 +99,7 @@
 
     function setPlayers() {
         const players = prompt('Players `#P1,ff0000;P2,00ff00`');
-        if (players) window.localStorage.setItem('playersv1', players);
+        if (players) window.localStorage.setItem('khipu:playersv1', players);
     }
 </script>
 
