@@ -71,7 +71,12 @@
             } else if (delta < -Math.PI) {
                 delta += Math.PI * 2;
             }
+            const prevPoints = extraPoints;
             totalRotation += delta;
+            const newPoints = Math.round((totalRotation * FULL_TURN_POINTS) / (Math.PI * 2));
+            if (newPoints !== prevPoints) {
+                navigator.vibrate?.(8); // short pulse per point tick
+            }
         };
 
         let updateScheduled = false;
@@ -107,6 +112,7 @@
             if (activePlayer == null) return;
             if (active) return;
             assert(extraPoints == 0, 'extra points should be 0 when pressing the main button');
+            navigator.vibrate?.(30); // longer pulse on confirm
             onpress(activePlayer.id, currentPoints);
             currentPoints = 0; // points were assigned, so reset to 0
             resetState();
