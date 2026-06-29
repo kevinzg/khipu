@@ -150,6 +150,15 @@
     <svg viewBox="0 0 100 100" use:setupEvents class="select-none" style="touch-action: none;">
         <!-- Move origin to the center -->
         <g transform="translate(50, 50)">
+            <!-- Dial rail outer glow -->
+            <circle
+                cx="0"
+                cy="0"
+                r={DIAL_RADIUS}
+                stroke="#1e293b"
+                stroke-width={DIAL_WIDTH + 2}
+                fill="transparent"
+            />
             <!-- Dial rail -->
             <circle
                 cx="0"
@@ -159,16 +168,27 @@
                 stroke-width={DIAL_WIDTH}
                 fill="transparent"
             />
+            <!-- Dial rail inner highlight -->
+            <circle
+                cx="0"
+                cy="0"
+                r={DIAL_RADIUS}
+                stroke="#475569"
+                stroke-width="1"
+                fill="transparent"
+            />
 
+            <!-- Center button shadow -->
+            <circle cx="1" cy="1.5" r={CENTER_BUTTON_RADIUS} fill="rgba(0,0,0,0.35)" />
             <!-- Center button -->
             <g class="dial-button cursor-pointer">
                 <circle
                     cx="0"
                     cy="0"
                     r={CENTER_BUTTON_RADIUS}
-                    stroke="black"
+                    stroke="rgba(255,255,255,0.15)"
                     stroke-width="1"
-                    fill={activePlayer?.color ?? '#e2e8f0'}
+                    fill={activePlayer?.color ?? '#1e293b'}
                     data-main-button="true"
                 />
                 <!-- y=1 so text looks centered -->
@@ -179,7 +199,6 @@
                     dominant-baseline="middle"
                     font-size="16"
                     fill="white"
-                    stroke="black"
                     font-weight="bold"
                     data-main-button="true"
                 >
