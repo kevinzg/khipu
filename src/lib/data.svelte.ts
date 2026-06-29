@@ -42,7 +42,7 @@ export class Data {
         if (this.head < this.actions.length) {
             this.actions = this.actions.slice(0, this.head);
         }
-        this.actions.push({ playerId: id, delta });
+        this.actions.push({ playerId: id, delta, timestamp: Date.now() });
         this.head++;
     }
 
@@ -108,11 +108,17 @@ export class Data {
         return summary;
     }
 
-    get history(): Array<{ name: string; color: string; delta: number; score: number }> {
+    get history(): Array<{
+        name: string;
+        color: string;
+        delta: number;
+        score: number;
+        timestamp: number;
+    }> {
         const score: Record<Id, Points> = {};
         const history = [];
         for (let i = 0; i < this.head; i++) {
-            const { playerId, delta } = this.actions[i];
+            const { playerId, delta, timestamp } = this.actions[i];
             score[playerId] = (score[playerId] ?? 0) + delta;
             const player = this.players.find(({ id }) => id === playerId);
             history.push({
@@ -120,6 +126,7 @@ export class Data {
                 color: player?.color ?? 'gray',
                 delta,
                 score: score[playerId],
+                timestamp,
             });
         }
         history.reverse();
@@ -148,6 +155,7 @@ type Points = number;
 type Action = {
     playerId: Id;
     delta: Points;
+    timestamp: number; // epoch ms; optional for games saved before timestamps existed
 };
 
 export type Player = {
