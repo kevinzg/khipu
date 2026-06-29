@@ -43,6 +43,9 @@
 
     let currentPoints = $state(0); // current points for the active player
     let extraPoints = $derived(Math.round((totalRotation * FULL_TURN_POINTS) / (Math.PI * 2))); // points being added to the current points
+    let scorePointsAnim = $state(false); // triggers the center-number shrink on confirm
+    let frozenValue: number | null = $state(null); // confirmed number shown during the shrink, before it flips to 0
+    const CONFIRM_ANIM_MS = 350;
 
     function setupEvents(svg: SVGElement) {
         // Function to convert client coordinates to SVG coordinates
@@ -113,6 +116,12 @@
             if (active) return;
             assert(extraPoints == 0, 'extra points should be 0 when pressing the main button');
             navigator.vibrate?.(30); // longer pulse on confirm
+            // Keep showing the confirmed number while it shrinks away...
+            frozenValue = currentPoints;
+            scorePointsAnim = false; // restart the animation if it's still mid-flight
+            scorePointsAnim = true;
+            // ...then drop to 0 once it has shrunk to nothing (the animation midpoint).
+            setTimeout(() => (frozenValue = null), CONFIRM_ANIM_MS / 2);
             onpress(activePlayer.id, currentPoints);
             currentPoints = 0; // points were assigned, so reset to 0
             resetState();
@@ -207,8 +216,13 @@
                     fill="white"
                     font-weight="bold"
                     data-main-button="true"
+                    class:confirm-pop={scorePointsAnim}
+                    onanimationend={() => {
+                        scorePointsAnim = false;
+                        frozenValue = null;
+                    }}
                 >
-                    {formatDelta(currentPoints + extraPoints)}
+                    {formatDelta(frozenValue ?? currentPoints + extraPoints)}
                 </text>
             </g>
 
@@ -264,5 +278,29 @@
         max-width: 100%;
         max-height: 100%;
         flex: 1;
+    }
+
+    .confirm-pop {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: confirm-pop 0.35s ease-in-out;
+    }
+
+    @keyframes confirm-pop {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(0);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .confirm-pop {
+            animation: none;
+        }
     }
 </style>
