@@ -99,24 +99,10 @@ export class Data {
         }
         // Generate the summary
         const summary = this.players.map((player) => {
-            let showTurtle = false;
-            if (this.players.length > 2 && ranks[player.id] === this.players.length) {
-                const maxScore = ranking[0].points;
-                const thisScore = ranking[ranking.length - 1].points;
-                const nextScore = ranking[ranking.length - 2].points;
-                if (maxScore > 0) {
-                    const p = thisScore / maxScore;
-                    const pNext = nextScore / maxScore;
-                    if (p < 0.5 && pNext > 0.5 && pNext - p > 0.2) {
-                        showTurtle = true;
-                    }
-                }
-            }
             return {
                 player,
                 score: score[player.id],
                 rank: ranks[player.id],
-                showTurtle,
             };
         });
         return summary;
@@ -174,5 +160,4 @@ type Summary = Array<{
     player: Player;
     score: Points;
     rank: number; // 1 for first, 2 for second, etc., in case of ties both players will have the same rank
-    showTurtle: boolean;
 }>;
