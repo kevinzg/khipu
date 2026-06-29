@@ -248,7 +248,7 @@
             {:else}
                 <div class="flex flex-col flex-grow space-between">
                     <div class="flex-grow">
-                        <Scoreboard {data} {firstPlayer} />
+                        <Scoreboard {data} {firstPlayer} {ongoingPick} />
                     </div>
                     <Lines {data} />
                 </div>

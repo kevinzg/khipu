@@ -2,7 +2,11 @@
     import { flip } from 'svelte/animate';
     import type { Data } from '$lib/data.svelte';
 
-    const { data, firstPlayer }: { data: Data; firstPlayer: number | null } = $props();
+    const {
+        data,
+        firstPlayer,
+        ongoingPick,
+    }: { data: Data; firstPlayer: number | null; ongoingPick: boolean } = $props();
 
     const medals: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
 
@@ -33,8 +37,11 @@
     {#each ranked as entry (entry.player.id)}
         <div
             class="player-card"
+            class:highlight={ongoingPick && entry.player.id === firstPlayerId}
             animate:flip={{ duration: 350 }}
-            style="--player-color: {entry.player.color}"
+            style="--player-color: {entry.player.color}; transition-duration: {ongoingPick
+                ? '0ms'
+                : '800ms'};"
         >
             <!-- Colored left border -->
             <div class="color-bar"></div>
@@ -51,8 +58,8 @@
             <!-- Name -->
             <div class="name-col">
                 <span class="player-name">{entry.player.name}</span>
-                {#if entry.player.id === firstPlayerId}
-                    <span class="first-star" title="Goes first">★</span>
+                {#if entry.player.id === firstPlayerId && !ongoingPick}
+                    <span class="first-star" title="First Player Token">★</span>
                 {/if}
             </div>
 
@@ -72,6 +79,12 @@
         @apply relative overflow-hidden;
         padding: 0.6rem 1rem 0.6rem 0;
         min-height: 3.5rem;
+        transition-property: background-color;
+        transition-timing-function: ease-out;
+    }
+
+    .highlight {
+        @apply bg-amber-200;
     }
 
     .color-bar {
@@ -106,7 +119,7 @@
     }
 
     .first-star {
-        @apply text-amber-400 text-sm leading-none flex-shrink-0;
+        @apply text-amber-400 text-xl leading-none flex-shrink-0;
     }
 
     .score-col {
