@@ -1,4 +1,4 @@
-# scorpio
+# Khipu
 
 Score tracking app for board games.
 
