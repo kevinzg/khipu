@@ -21,16 +21,15 @@
     <div class="bars-container px-3 pb-3 pt-1 flex flex-col gap-1">
         {#each bars as b (b.name)}
             <div class="bar-row">
-                <div
-                    class="bar-fill"
-                    style="width: {b.pct}%; background-color: {b.color};"
-                ></div>
+                <div class="bar-fill" style="width: {b.pct}%; background-color: {b.color};"></div>
             </div>
         {/each}
     </div>
 {/if}
 
 <style lang="postcss">
+    @reference 'tailwindcss';
+
     .bars-container {
         @apply bg-white;
     }

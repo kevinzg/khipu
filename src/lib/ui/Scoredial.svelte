@@ -208,7 +208,7 @@
 
             <!-- Holes -->
             {#if !active}
-                {#each holes as b}
+                {#each holes as b (b.idx)}
                     {@render hole(b.angle, b.idx, b.player)}
                 {/each}
             {/if}

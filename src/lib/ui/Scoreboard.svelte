@@ -74,6 +74,8 @@
 </div>
 
 <style lang="postcss">
+    @reference 'tailwindcss';
+
     .player-card {
         @apply flex items-center gap-3 rounded-2xl bg-white shadow-sm;
         @apply relative overflow-hidden;

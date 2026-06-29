@@ -39,6 +39,8 @@
 </div>
 
 <style lang="postcss">
+    @reference 'tailwindcss';
+
     .history-card {
         @apply flex items-center gap-3 rounded-2xl bg-white shadow-sm px-4 py-2;
     }

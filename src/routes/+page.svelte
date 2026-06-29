@@ -110,7 +110,9 @@
         <!-- Scoreboard panel -->
         <div class="flex flex-col bg-gray-50 overflow-scroll">
             <!-- Toolbar -->
-            <div class="flex flex-row justify-between items-center px-2 py-2 space-x-2 bg-white border-b border-gray-100 shadow-sm">
+            <div
+                class="flex flex-row justify-between items-center px-2 py-2 space-x-2 bg-white border-b border-gray-100 shadow-sm"
+            >
                 <div class="flex flex-row space-x-2">
                     <button
                         class="button icon"
@@ -158,7 +160,7 @@
                 <div>
                     <select use:selection class="text">
                         <option value="">Players</option>
-                        {#each data.freePlayers as p}
+                        {#each data.freePlayers as p (p.id)}
                             <option value={p.id}>{p.name}</option>
                         {/each}
                     </select>
@@ -263,6 +265,8 @@
 </div>
 
 <style lang="postcss">
+    @reference 'tailwindcss';
+
     .button.icon {
         @apply w-11 flex items-center justify-center;
         @apply transition-transform active:scale-90;
