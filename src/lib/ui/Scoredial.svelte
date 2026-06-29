@@ -48,27 +48,17 @@
         // Function to convert client coordinates to SVG coordinates
         const transform = ([clientX, clientY]: [number, number]) => {
             const bbox = svg.getBoundingClientRect();
-            const centerX = bbox.left + bbox.width / 2;
-            const centerY = bbox.top + bbox.height / 2;
-            const x = clientX - centerX;
-            const y = clientY - centerY;
+            const x = clientX - (bbox.left + bbox.width / 2);
+            const y = clientY - (bbox.top + bbox.height / 2);
             return [x, y];
         };
 
-        const getCoords = (ev: MouseEvent | TouchEvent): [number, number] => {
-            if ('targetTouches' in ev) {
-                const t = ev.targetTouches[0];
-                if (!t) {
-                    throw new Error('expected touch');
-                }
-                return [t.clientX, t.clientY];
-            }
-            return [ev.clientX, ev.clientY];
-        };
-
         let prevAngle: number | null = null;
-        const mouseMoveHandler = (ev: MouseEvent | TouchEvent) => {
-            const [x, y] = transform(getCoords(ev));
+        let latestCoords: [number, number] | null = null;
+        const updateRotation = () => {
+            if (latestCoords == null) return;
+            const [x, y] = transform(latestCoords);
+            latestCoords = null;
             let angle = Math.atan2(y, x);
             if (prevAngle == null) {
                 prevAngle = angle;
@@ -84,15 +74,28 @@
             totalRotation += delta;
         };
 
+        let updateScheduled = false;
+        const mouseMoveHandler = (ev: PointerEvent) => {
+            latestCoords = [ev.clientX, ev.clientY];
+            if (updateScheduled) return;
+            updateScheduled = true;
+            requestAnimationFrame(() => {
+                updateScheduled = false;
+                updateRotation();
+            });
+        };
+
         const mouseUpHandler = () => {
             resetState();
-            window.removeEventListener('pointermove', mouseMoveHandler);
-            window.removeEventListener('pointerup', mouseUpHandler);
+            svg.removeEventListener('pointermove', mouseMoveHandler);
+            svg.removeEventListener('pointerup', mouseUpHandler);
         };
 
         const resetState = () => {
             activeHole = null;
             prevAngle = null;
+            latestCoords = null;
+            updateScheduled = false;
             currentPoints += extraPoints;
             totalRotation = 0; // implies extraPoints = 0
             if (currentPoints == 0) {
@@ -109,8 +112,8 @@
             resetState();
         };
 
-        const mouseDownHandler = (ev: MouseEvent | TouchEvent) => {
-            ev.preventDefault(); // Disable scrolling for touch events
+        const mouseDownHandler = (ev: PointerEvent) => {
+            ev.preventDefault();
 
             // Main button
             if ((ev.target as SVGElement).getAttribute('data-main-button') === 'true') {
@@ -126,10 +129,13 @@
                     currentPoints = 0; // Reset points if the player changed
                 }
                 activePlayer = holes[activeHole].player;
-                window.addEventListener('pointermove', mouseMoveHandler);
-                window.addEventListener('pointerup', mouseUpHandler);
+                // Capture the pointer  even if the finger leaves the SVG boundary.
+                svg.setPointerCapture(ev.pointerId);
+                svg.addEventListener('pointermove', mouseMoveHandler);
+                svg.addEventListener('pointerup', mouseUpHandler);
             }
         };
+
         svg.addEventListener('pointerdown', mouseDownHandler);
         return {
             destroy() {
@@ -141,7 +147,7 @@
 </script>
 
 <div class="dial-container flex">
-    <svg viewBox="0 0 100 100" use:setupEvents class="select-none">
+    <svg viewBox="0 0 100 100" use:setupEvents class="select-none" style="touch-action: none;">
         <!-- Move origin to the center -->
         <g transform="translate(50, 50)">
             <!-- Dial rail -->
@@ -196,34 +202,36 @@
     </svg>
 </div>
 
-{#snippet hole(angle, index, player)}
-    {@const x = Math.cos(angle) * DIAL_RADIUS}
-    {@const y = -Math.sin(angle) * DIAL_RADIUS}
-    <g class="cursor-pointer">
-        <circle
-            cx={x}
-            cy={y}
-            r={HOLE_RADIUS}
-            fill={player.color}
-            stroke-width="0.5"
-            stroke="#0f172a"
-            data-player-index={index}
-        />
-        <text
-            {x}
-            y={y + 1}
-            text-anchor="middle"
-            dominant-baseline="middle"
-            font-size="8"
-            font-weight="bold"
-            stroke="black"
-            stroke-width="0.5"
-            fill="white"
-            data-player-index={index}
-        >
-            {player.name.charAt(0)}
-        </text>
-    </g>
+{#snippet hole(angle: number, index: number | null, player: Player | null)}
+    {#if player != null}
+        {@const x = Math.cos(angle) * DIAL_RADIUS}
+        {@const y = -Math.sin(angle) * DIAL_RADIUS}
+        <g class="cursor-pointer">
+            <circle
+                cx={x}
+                cy={y}
+                r={HOLE_RADIUS}
+                fill={player.color}
+                stroke-width="0.5"
+                stroke="#0f172a"
+                data-player-index={index}
+            />
+            <text
+                {x}
+                y={y + 1}
+                text-anchor="middle"
+                dominant-baseline="middle"
+                font-size="8"
+                font-weight="bold"
+                stroke="black"
+                stroke-width="0.5"
+                fill="white"
+                data-player-index={index}
+            >
+                {player.name.charAt(0)}
+            </text>
+        </g>
+    {/if}
 {/snippet}
 
 <style>
