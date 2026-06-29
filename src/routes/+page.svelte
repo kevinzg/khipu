@@ -107,10 +107,10 @@
 <div class="flex flex-col w-full h-full select-none">
     <!-- Main content -->
     <div class="main flex-grow overflow-hidden">
-        <!-- Scoreboard -->
-        <div class="flex flex-col bg-gray-200 overflow-scroll">
+        <!-- Scoreboard panel -->
+        <div class="flex flex-col bg-gray-50 overflow-scroll">
             <!-- Toolbar -->
-            <div class="flex flex-row justify-between items-center px-2 py-2 space-x-2 bg-white">
+            <div class="flex flex-row justify-between items-center px-2 py-2 space-x-2 bg-white border-b border-gray-100 shadow-sm">
                 <div class="flex flex-row space-x-2">
                     <button
                         class="button icon"
@@ -264,49 +264,27 @@
 
 <style lang="postcss">
     .button.icon {
-        @apply w-12;
-        @apply flex items-center justify-around;
+        @apply w-11 flex items-center justify-center;
+        @apply transition-transform active:scale-90;
     }
 
     select.text {
-        @apply px-4;
+        @apply px-3 text-sm;
     }
 
     .button,
     select {
-        @apply text-blue-500 h-12 p-2;
-        @apply bg-blue-100 rounded-xl hover:bg-blue-200 active:bg-blue-300 disabled:bg-gray-200;
-    }
-    .button:hover {
-        @apply text-blue-700;
-    }
-    .button:active {
-        @apply text-blue-800;
-    }
-    .button:disabled {
-        @apply text-gray-400 cursor-not-allowed;
+        @apply text-slate-600 h-11 p-2;
+        @apply bg-slate-100 rounded-xl hover:bg-slate-200 active:bg-slate-300;
+        @apply disabled:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed;
     }
 
     .red {
-        @apply text-red-500;
-        @apply bg-red-100 hover:bg-red-200 active:bg-red-300 disabled:bg-gray-200;
-    }
-    .red:hover {
-        @apply text-red-700;
-    }
-    .red:active {
-        @apply text-red-800;
+        @apply text-red-500 bg-red-50 hover:bg-red-100 active:bg-red-200;
     }
 
     .yellow {
-        @apply text-yellow-500;
-        @apply bg-yellow-100 hover:bg-yellow-200 active:bg-yellow-300 disabled:bg-gray-200;
-    }
-    .yellow:hover {
-        @apply text-yellow-700;
-    }
-    .yellow:active {
-        @apply text-yellow-800;
+        @apply text-amber-500 bg-amber-50 hover:bg-amber-100 active:bg-amber-200;
     }
 
     .main {

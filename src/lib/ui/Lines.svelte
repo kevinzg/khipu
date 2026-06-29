@@ -1,33 +1,49 @@
 <script lang="ts">
     import type { Data } from '$lib/data.svelte';
+
     const { data }: { data: Data } = $props();
 
-    const barHeight = 4;
-    const graphHeight = $derived(barHeight * data.summary.length);
-    // TODO: negative scores?
     const bars = $derived.by(() => {
-        const fullWidth = Math.max(120, ...data.summary.map((p) => p.score));
-        const sorted = data.summary.sort((a, b) => b.score - a.score).toReversed();
-        return sorted.map((p, idx) => {
-            return {
+        const max = Math.max(1, ...data.summary.map((p) => p.score));
+        return data.summary
+            .slice()
+            .sort((a, b) => a.score - b.score)
+            .map((p) => ({
                 color: p.player.color,
-                width: (100 * p.score) / fullWidth,
-                y: graphHeight - (1 + idx) * barHeight,
-            };
-        });
+                pct: Math.max(0, (p.score / max) * 100),
+                score: p.score,
+                name: p.player.name,
+            }));
     });
 </script>
 
-<div class="">
-    <svg
-        width="100%"
-        height={graphHeight}
-        viewBox={`0 0 100 ${graphHeight}`}
-        preserveAspectRatio="none"
-    >
-        {#each bars as b}
-            <rect class="bar" width={b.width} height={barHeight} x="0" y={b.y} fill={b.color}
-            ></rect>
+{#if bars.length > 0}
+    <div class="bars-container px-3 pb-3 pt-1 flex flex-col gap-1">
+        {#each bars as b (b.name)}
+            <div class="bar-row">
+                <div
+                    class="bar-fill"
+                    style="width: {b.pct}%; background-color: {b.color};"
+                ></div>
+            </div>
         {/each}
-    </svg>
-</div>
+    </div>
+{/if}
+
+<style lang="postcss">
+    .bars-container {
+        @apply bg-white;
+    }
+
+    .bar-row {
+        height: 6px;
+        @apply rounded-full overflow-hidden bg-gray-100;
+    }
+
+    .bar-fill {
+        height: 100%;
+        @apply rounded-full;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 3px;
+    }
+</style>
