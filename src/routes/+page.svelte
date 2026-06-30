@@ -1,33 +1,23 @@
 <script lang="ts">
-    import { setContext } from 'svelte';
+    import { setContext, untrack } from 'svelte';
 
-    import { loop, longpress, assert } from '$lib/common';
+    import { loop, assert } from '$lib/common';
     import { Data } from '$lib/data.svelte';
+    import { Roster } from '$lib/roster.svelte';
     import Scoredial from '$lib/ui/Scoredial.svelte';
     import Scoreboard from '$lib/ui/Scoreboard.svelte';
     import History from '$lib/ui/History.svelte';
-    import { parsePlayerPool } from '$lib/common';
+    import Players from '$lib/ui/Players.svelte';
     import Lines from '$lib/ui/Lines.svelte';
 
     const data = new Data();
+    const roster = new Roster();
 
     let showHistory = $state(false);
+    let showPlayers = $state(false);
 
     $effect(() => {
-        const players = parsePlayerPool(
-            window.localStorage.getItem('khipu:playersv1') ?? window.location.hash,
-        );
-        if (players.length > 0) {
-            data.setPlayerPool(players);
-        } else {
-            data.setPlayerPool([
-                { id: 1, name: 'Alice', color: '#2563eb' },
-                { id: 2, name: 'Bob', color: '#dc2626' },
-                { id: 3, name: 'Charlie', color: '#22c55e' },
-                { id: 4, name: 'David', color: '#eab308' },
-                { id: 5, name: 'Eve', color: '#c026d3' },
-            ]);
-        }
+        roster.load();
 
         window.addEventListener('beforeunload', (ev) => {
             if (data.actions.length > 0) {
@@ -36,23 +26,18 @@
         });
     });
 
-    setContext('data', data);
+    // Keep the selectable pool in sync with the persisted roster. Only re-run
+    // when the roster changes; untrack the data reads/writes so updating the
+    // pool (and the in-game players it touches) doesn't re-trigger this effect.
+    $effect(() => {
+        const players = roster.players;
+        untrack(() => {
+            data.setPlayerPool(players);
+            data.refreshFromPool();
+        });
+    });
 
-    function selection(node: HTMLSelectElement) {
-        const selectPlayer = () => {
-            const id = parseInt(node.value);
-            if (id) {
-                data.addPlayer(id);
-            }
-            node.value = '';
-        };
-        node.addEventListener('change', selectPlayer);
-        return {
-            destroy() {
-                node.removeEventListener('change', selectPlayer);
-            },
-        };
-    }
+    setContext('data', data);
 
     function reset() {
         if (!ongoingPick && confirm('Are you sure you want to start a new game?')) {
@@ -95,11 +80,6 @@
                 ongoingPick = false;
             },
         );
-    }
-
-    function setPlayers() {
-        const players = prompt('Players `#P1,ff0000;P2,00ff00`');
-        if (players) window.localStorage.setItem('khipu:playersv1', players);
     }
 </script>
 
@@ -158,20 +138,33 @@
                     </button>
                 </div>
                 <div>
-                    <select use:selection class="text">
-                        <option value="">Players</option>
-                        {#each data.freePlayers as p (p.id)}
-                            <option value={p.id}>{p.name}</option>
-                        {/each}
-                    </select>
+                    <button
+                        class="button icon"
+                        title="Players"
+                        aria-label="Players"
+                        onclick={() => (showPlayers = true)}
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="size-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+                            />
+                        </svg>
+                    </button>
                 </div>
                 <div class="flex flex-row space-x-2">
                     <button
                         title="Pick first player"
                         class="button icon"
                         class:yellow={ongoingPick}
-                        use:longpress={1000}
-                        onlongpress={setPlayers}
                         onclick={pickFirstPlayer}
                     >
                         <svg
@@ -264,6 +257,10 @@
     </div>
 </div>
 
+{#if showPlayers}
+    <Players {data} {roster} onclose={() => (showPlayers = false)} />
+{/if}
+
 <style lang="postcss">
     @reference 'tailwindcss';
 
@@ -272,12 +269,7 @@
         @apply transition-transform active:scale-90;
     }
 
-    select.text {
-        @apply px-3 text-sm;
-    }
-
-    .button,
-    select {
+    .button {
         @apply text-slate-600 h-11 p-2;
         @apply bg-slate-100 rounded-xl hover:bg-slate-200 active:bg-slate-300;
         @apply disabled:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed;

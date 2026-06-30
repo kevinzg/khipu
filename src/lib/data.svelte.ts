@@ -48,9 +48,17 @@ export class Data {
 
     addPlayer(id: number) {
         const player = this.pool.find((p) => p.id === id);
-        if (player) {
+        if (player && !this.players.find((p) => p.id === id)) {
             this.players.push(player);
         }
+    }
+
+    removePlayer(id: number) {
+        this.players = this.players.filter((p) => p.id !== id);
+    }
+
+    refreshFromPool() {
+        this.players = this.players.map((p) => this.pool.find((pp) => pp.id === p.id) ?? p);
     }
 
     undo() {

@@ -34,5 +34,8 @@
         "vite": "^8.0.16",
         "vitest": "^4.1.9"
     },
-    "type": "module"
+    "type": "module",
+    "dependencies": {
+        "idb": "^8.0.3"
+    }
 }
